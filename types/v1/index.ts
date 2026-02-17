@@ -3,3 +3,5 @@ export * from './resources/globals';
 export * from './resources/projects';
 export * from './resources/templates';
 export * from './resources/webhooks';
+
+export { API_BASE_URL, Routes } from './routes';
