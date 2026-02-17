@@ -1,0 +1,62 @@
+{
+	"version": "1.0.0",
+	"name": "@rewritejs/types",
+	"description": "Official Rewrite API typings that are always up to date",
+	"type": "module",
+	"main": "./dist/v1/index.js",
+	"types": "./dist/v1/index.d.ts",
+	"license": "Apache-2.0",
+	"exports": {
+		".": {
+			"import": "./dist/v1/index.js",
+			"types": "./dist/v1/index.d.ts"
+		},
+		"./v1": {
+			"import": "./dist/v1/index.js",
+			"types": "./dist/v1/index.d.ts"
+		},
+		"./v1/*": {
+			"import": "./dist/v1/*.js",
+			"types": "./dist/v1/*.d.ts"
+		},
+		"./v*": null
+	},
+	"typesVersions": {
+		"*": {
+			"v1": [
+				"dist/v1/index.d.ts"
+			]
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "bun run scripts/version.ts && tsc",
+		"prepublishOnly": "bun run build",
+		"biome:check": "bunx biome check --write . && clear"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.15",
+		"typescript": "^5.9.3"
+	},
+	"maintainers": [
+		{
+			"name": "Almeida",
+			"url": "https://github.com/almeidazs"
+		}
+	],
+	"keywords": [
+		"api",
+		"types",
+		"typescript",
+		"rewrite"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RewriteToday/types.git"
+	}
+}
