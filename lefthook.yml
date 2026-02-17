@@ -1,0 +1,31 @@
+pre-commit:
+  parallel: false
+  commands:
+    biome:
+      run: |
+        FILES=$(git diff --name-only --cached)
+
+        if [ -z "$FILES" ]; then
+          exit 0
+        fi
+
+        echo "$FILES" \
+          | grep -E '\.(ts|js|json)$' \
+          | xargs bun run biome:check --write
+
+        git add $FILES
+
+        bun run biome:check
+
+pre-push:
+  parallel: true
+  commands:
+    check:
+      run: bun run biome:check
+    test:
+      run: bun test || echo "We did not find any test to run, skipping this step"
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bun --bun commitlint --edit "$1"

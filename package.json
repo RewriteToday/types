@@ -38,6 +38,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.15",
+		"@commitlint/config-conventional": "^20.4.1",
+		"commitlint": "^20.4.1",
 		"typescript": "^5.9.3"
 	},
 	"maintainers": [
