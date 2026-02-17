@@ -1,6 +1,6 @@
 import type { Snowflake } from './globals';
 
-export interface APITemplates {
+export interface APITemplate {
 	id: Snowflake;
 	name: string;
 	projectId: Snowflake;
