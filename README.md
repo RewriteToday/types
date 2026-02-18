@@ -24,19 +24,25 @@ yarn add @rewritejs/types
 
 <div align="center">
 
-## Usage
+## Using
 
-### Importing v1 Types
+### How we document our types
 
 </div>
 
-```ts
-import type {
-	APIResponse,
-	RESTGetProjectData,
-	RESTPostCreateWebhookBody,
-} from '@rewritejs/types/v1';
-```
+- Prefix `API*`
+Represents general API structures (returned objects, internal models, etc.).
+
+- Prefix `REST<HTTPMethod>*`
+Types used in direct API requests.
+  - Suffix Body → request body payload
+  E.g.: `RESTPostCreateTemplateBody`
+
+  - Suffix `QueryParams` → query string parameters
+  E.g.: `RESTGetListWebhooksQueryParams`
+
+  - Suffix `Data` → data returned by the API
+  E.g.: `RESTGetListWebhooksData`
 
 <div align="center">
 
