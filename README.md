@@ -14,16 +14,12 @@ You can use this package with your *favorite package manager*
 
 ```bash
 bun add @rewritejs/types
-```
-
-<div align="center">
-
-Or with npm:
-
-</div>
-
-```bash
+# Or
 npm install @rewritejs/types
+# Or
+pnpm install @rewritejs/types
+# Or
+yarn add @rewritejs/types
 ```
 
 <div align="center">
@@ -49,19 +45,16 @@ import type {
 </div>
 
 ```ts
-import type { RESTGetProjectData } from '@rewritejs/types/v1';
+import { REST } from '@rewritejs/rest';
+import { Routes, type RESTGetProjectData } from '@rewritejs/types/v1';
 
-async function getProject(projectId: string): Promise<RESTGetProjectData> {
-	// Your HTTP call here
-	return {
-		ok: true,
-		data: {
-			id: '123456789012345678',
-			name: 'My Project',
-			ownerId: '987654321098765432',
-			icon: 'https://cdn.rewritetoday.com/users/123456789012345678/abc.webp',
-		},
-	};
+const rest = new REST(process.env.REWRITE_API_KEY);
+
+// Return type: Promise<RESTGetWebhooksData>
+async function fetchWebhooks(projectId: string) {
+	const data = await rest.get<RESTGetWebhooksData>(Routes.webhooks.list(projectId));
+	
+	return data
 }
 ```
 
@@ -77,21 +70,8 @@ import { API_BASE_URL, Routes } from '@rewritejs/types/v1';
 const projectId = '123';
 const webhookId = '999';
 
-const url = `${API_BASE_URL}/v1${Routes.webhooks.get(projectId, webhookId)}`;
 // https://api.rewritetoday.com/v1/projects/123/webhooks/999
-```
-
-<div align="center">
-
-### Cursor Query Helper
-
-</div>
-
-```ts
-import { createCursorQuery } from '@rewritejs/types/v1/utils';
-
-const query = createCursorQuery({ limit: 20, after: '1000' }).toString();
-// limit=20&after=1000
+const url = `${API_BASE_URL}/v1${Routes.webhooks.get(projectId, webhookId)}`;
 ```
 
 <div align="center">
