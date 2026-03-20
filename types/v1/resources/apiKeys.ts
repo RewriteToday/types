@@ -1,10 +1,13 @@
 import type { Snowflake } from './globals';
 
+/**
+ * https://docs.rewritetoday.com/api-reference/api-keys
+ */
 export interface APIAPIKey {
 	/** API key ID in {@link Snowflake} format. */
 	id: Snowflake;
 
-	/** Display name of the API key. */
+	/** Display name of the API key (1-32 max). */
 	name: string;
 
 	/** Project ID in {@link Snowflake} format. */
@@ -12,33 +15,39 @@ export interface APIAPIKey {
 
 	/** Allowed scopes for this key. */
 	scopes: APIKeyScope[];
+
+	/** Prefix used in the API key. */
+	prefix: string;
+
+	/** Timestamp when the API key was last used (~5 minutes late). */
+	lastUsedAt?: string;
+
+	/** Optional description of the API key (1-62 max). */
+	description?: string;
+
+	/** Timestamp when Rewrite created the API key. */
+	createdAt: string;
 }
 
+/**
+ * https://docs.rewritetoday.com/api-reference/api-keys
+ */
 export enum APIKeyScope {
-	/** Grants every available permission. */
 	Wildcard = '*',
 
-	/** Allows reading project details. */
 	ReadProject = 'project:read',
 
-	/** Allows updating project details. */
+	ReadAPIKeys = 'project:api_keys:read',
 	WriteProject = 'project:write',
 
-	/** Allows reading API key metadata. */
-	ReadAPIKeys = 'project:api_key:read',
+	ReadWebhooks = 'project:webhooks:read',
 
-	/** Allows creating and editing templates. */
-	WriteTemplate = 'project:template:write',
+	WriteTemplate = 'project:templates:write',
+	ReadTemplates = 'project:templates:read',
+	WriteWebhooks = 'project:webhooks:write',
 
-	/** Allows listing and viewing templates. */
-	ReadTemplates = 'project:template:read',
+	WriteMessages = 'message:write',
+	ReadMessages = 'message:read',
 
-	/** Allows reading payment information. */
-	ReadPayments = 'project:payment:read',
-
-	/** Allows listing and viewing webhooks. */
-	ReadWebhooks = 'project:webhook:read',
-
-	/** Allows creating and editing webhooks. */
-	WriteWebhooks = 'project:webhook:write',
+	ReadLogs = 'project:logs:read',
 }

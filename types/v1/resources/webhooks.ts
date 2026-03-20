@@ -1,11 +1,17 @@
 import type { Snowflake } from './globals';
 
+/**
+ * https://docs.rewritetoday.com/api-reference/webhooks
+ */
 export interface APIWebhook {
 	/** Webhook ID in {@link Snowflake} format. */
 	id: Snowflake;
 
-	/** Webhook name. */
+	/** Webhook name (1-32 max). */
 	name: string;
+
+	/** Secret content to send in events. */
+	secret: string;
 
 	/** Destination URL for webhook events. */
 	endpoint: string;
@@ -18,25 +24,43 @@ export interface APIWebhook {
 
 	/** Project ID in {@link Snowflake} format. */
 	projectId: Snowflake;
+
+	/** Timestamp when the webhook endpoint was created. */
+	createdAt: string;
 }
 
+/**
+ * https://docs.rewritetoday.com/api-reference/webhooks
+ */
 export enum WebhookEventType {
-	/** Fired when an SMS enters the queue. */
-	SMSQueued = 'sms.queued',
+	/** Fired when an OTP SMS was sent. */
+	SMSOTP = 'sms.otp',
 
-	/** Fired when an SMS reaches the destination. */
-	SMSDelivered = 'sms.delivered',
+	/** Fired when a message was sent. */
+	MessageSent = 'message.sent',
 
-	/** Fired when an SMS is scheduled for later. */
-	SMSScheduled = 'sms.scheduled',
+	/** Fired when a batch message was sent. */
+	MessageBatch = 'message.batch',
 
-	/** Fired when an SMS delivery fails. */
-	SMSFailed = 'sms.failed',
+	/** Fired when an message enters the queue. */
+	MessageQueued = 'message.queued',
 
-	/** Fired when an SMS is canceled before delivery. */
-	SMSCanceled = 'sms.canceled',
+	/** Fired when an message reaches the destination. */
+	MessageDelivered = 'message.delivered',
+
+	/** Fired when an message is scheduled for later. */
+	MessageScheduled = 'message.scheduled',
+
+	/** Fired when an message delivery fails. */
+	MessageFailed = 'message.failed',
+
+	/** Fired when an message is canceled before delivery. */
+	MessageCanceled = 'message.canceled',
 }
 
+/**
+ * https://docs.rewritetoday.com/api-reference/webhooks
+ */
 export enum WebhookStatus {
 	/** The webhook is active and receiving events. */
 	Active = 'ACTIVE',
