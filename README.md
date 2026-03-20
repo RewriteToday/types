@@ -2,7 +2,7 @@
 
 # Rewrite Types
 
-[@rewritejs/types](https://www.npmjs.com/package/@rewritejs/types), an official **TypeScript types** for the **Rewrite API**.
+[@rewritetoday/types](https://www.npmjs.com/package/@rewritetoday/types), an official **TypeScript types** for the **Rewrite API**.
 
 This package provides shared resource models, request/response contracts, and route builders used by Rewrite SDKs and applications. It is designed to keep API integrations strongly typed and consistent across projects.
 
@@ -13,13 +13,13 @@ You can use this package with your *favorite package manager*
 </div>
 
 ```bash
-bun add @rewritejs/types
+bun add @rewritetoday/types
 # Or
-npm install @rewritejs/types
+npm install @rewritetoday/types
 # Or
-pnpm install @rewritejs/types
+pnpm install @rewritetoday/types
 # Or
-yarn add @rewritejs/types
+yarn add @rewritetoday/types
 ```
 
 <div align="center">
@@ -51,8 +51,8 @@ Types used in direct API requests.
 </div>
 
 ```ts
-import { REST } from '@rewritejs/rest';
-import { Routes, type RESTGetProjectData } from '@rewritejs/types/v1';
+import { REST } from '@rewritetoday/rest';
+import { Routes, type RESTGetProjectData } from '@rewritetoday/types/v1';
 
 const rest = new REST(process.env.REWRITE_API_KEY);
 
@@ -71,7 +71,7 @@ async function fetchHooks() {
 </div>
 
 ```ts
-import { API_VERSION API_BASE_URL, Routes } from '@rewritejs/types/v1';
+import { API_VERSION API_BASE_URL, Routes } from '@rewritetoday/types/v1';
 
 // https://api.rewritetoday.com/v1/templates
 const CREATE_TEMPLATE_URL = `${API_BASE_URL}/${API_VERSION}/${Routes.templates.create()}`;
