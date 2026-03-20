@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@rewritejs/types",
+	"name": "@rewritetoday/types",
 	"description": "Official Rewrite API typings that are always up to date",
 	"type": "module",
 	"main": "./dist/v1/index.js",
