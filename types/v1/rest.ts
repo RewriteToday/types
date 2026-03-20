@@ -151,10 +151,11 @@ export type RESTPostCreateTemplateData = APIResponse<
 >;
 
 /** `POST https://api.rewritetoday.com/v1/templates`. */
-export type RESTPostCreateTemplateBody = Pick<
-	APITemplate,
-	'name' | 'i18n' | 'content' | 'variables' | 'description'
->;
+export interface RESTPostCreateTemplateBody
+	extends Pick<APITemplate, 'name' | 'content' | 'variables' | 'description'> {
+	/** Locale-specific overrides available for the template. */
+	i18n?: Partial<Record<CountryCode, string>>;
+}
 
 /** `PATCH https://api.rewritetoday.com/v1/templates/:id`. */
 export type RESTPatchUpdateTemplateData = APIResponse<null>;
