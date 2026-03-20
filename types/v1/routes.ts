@@ -1,4 +1,9 @@
-import type { RESTCursorOptions } from './rest';
+import type {
+	RESTGetListMessagesQueryParams,
+	RESTGetListTemplatesQueryParams,
+	RESTGetListWebhookLogsQueryParams,
+	RESTGetListWebhooksQueryParams,
+} from './rest';
 import { createCursorQuery } from './utils';
 
 export const API_BASE_URL = 'https://api.rewritetoday.com';
@@ -24,8 +29,8 @@ export const Routes = {
 			return '/messages/batch';
 		},
 		/** `GET https://api.rewritetoday.com/v1/messages`. */
-		list() {
-			return '/messages';
+		list(options?: RESTGetListMessagesQueryParams) {
+			return `/messages?${createCursorQuery(options)}`;
 		},
 		/** `GET https://api.rewritetoday.com/v1/messages/:id`. */
 		get(id: string) {
@@ -38,7 +43,7 @@ export const Routes = {
 	},
 	webhooks: {
 		/** `GET https://api.rewritetoday.com/v1/webhooks`. */
-		list(options?: RESTCursorOptions) {
+		list(options?: RESTGetListWebhooksQueryParams) {
 			return `/webhooks?${createCursorQuery(options)}`;
 		},
 		/** `POST https://api.rewritetoday.com/v1/webhooks`. */
@@ -58,13 +63,13 @@ export const Routes = {
 			return `/webhooks/${id}`;
 		},
 		/** `GET https://api.rewritetoday.com/v1/webhooks/:id/logs`. */
-		logs(id: string) {
-			return `/webhooks/${id}/logs`;
+		logs(id: string, options?: RESTGetListWebhookLogsQueryParams) {
+			return `/webhooks/${id}/logs?${createCursorQuery(options)}`;
 		},
 	},
 	templates: {
 		/** `GET https://api.rewritetoday.com/v1/templates`. */
-		list(options?: RESTCursorOptions) {
+		list(options?: RESTGetListTemplatesQueryParams) {
 			return `/templates?${createCursorQuery(options)}`;
 		},
 		/** `POST https://api.rewritetoday.com/v1/templates`. */
