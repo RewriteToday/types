@@ -74,10 +74,37 @@ async function fetchWebhooks(projectId: string) {
 import { API_BASE_URL, Routes } from '@rewritejs/types/v1';
 
 const projectId = '123';
+const templateId = '456';
 const webhookId = '999';
+const apiKeyId = '321';
 
-// https://api.rewritetoday.com/v1/projects/123/webhooks/999
-const url = `${API_BASE_URL}/v1${Routes.webhooks.get(projectId, webhookId)}`;
+const routes = {
+	webhooks: {
+		list: `${API_BASE_URL}/v1${Routes.webhooks.list(projectId)}`,
+		create: `${API_BASE_URL}/v1${Routes.webhooks.create(projectId)}`,
+		update: `${API_BASE_URL}/v1${Routes.webhooks.update(projectId, webhookId)}`,
+		delete: `${API_BASE_URL}/v1${Routes.webhooks.delete(projectId, webhookId)}`,
+		get: `${API_BASE_URL}/v1${Routes.webhooks.get(projectId, webhookId)}`,
+	},
+	templates: {
+		list: `${API_BASE_URL}/v1${Routes.templates.list(projectId)}`,
+		create: `${API_BASE_URL}/v1${Routes.templates.create(projectId)}`,
+		update: `${API_BASE_URL}/v1${Routes.templates.update(projectId, templateId)}`,
+		delete: `${API_BASE_URL}/v1${Routes.templates.delete(projectId, templateId)}`,
+		get: `${API_BASE_URL}/v1${Routes.templates.get(projectId, templateId)}`,
+	},
+	apiKeys: {
+		list: `${API_BASE_URL}/v1${Routes.apiKeys.list(projectId)}`,
+		create: `${API_BASE_URL}/v1${Routes.apiKeys.create(projectId)}`,
+		delete: `${API_BASE_URL}/v1${Routes.apiKeys.delete(projectId, apiKeyId)}`,
+	},
+	projects: {
+		create: `${API_BASE_URL}/v1${Routes.projects.create()}`,
+		update: `${API_BASE_URL}/v1${Routes.projects.update(projectId)}`,
+		delete: `${API_BASE_URL}/v1${Routes.projects.delete(projectId)}`,
+		get: `${API_BASE_URL}/v1${Routes.projects.get(projectId)}`,
+	},
+};
 ```
 
 <div align="center">
