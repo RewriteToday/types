@@ -239,7 +239,7 @@ export type RESTPostSendMessageBody = {
 	to: string;
 
 	/** Optional metadata stored with the message. */
-	tags: APIMessageTag[];
+	tags?: APIMessageTag[];
 
 	/** When provided, Rewrite schedules the message for later delivery. */
 	scheduledAt?: string;
