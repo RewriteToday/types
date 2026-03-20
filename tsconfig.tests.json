@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"rootDir": ".",
-		"types": ["bun-types"],
+		"types": ["bun-types"]
 	},
-	"include": ["types", "tests"],
+	"include": ["types", "tests"]
 }

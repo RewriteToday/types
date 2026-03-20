@@ -39,9 +39,9 @@
 		"test:types": "bun test && bunx tsc"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.4.2",
-		"@commitlint/config-conventional": "^20.4.1",
-		"commitlint": "^20.4.1",
+		"@biomejs/biome": "^2.4.8",
+		"@commitlint/config-conventional": "^20.5.0",
+		"commitlint": "^20.5.0",
 		"typescript": "^5.9.3"
 	},
 	"maintainers": [
