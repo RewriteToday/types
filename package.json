@@ -1,5 +1,5 @@
 {
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"name": "@rewritetoday/types",
 	"description": "Official Rewrite API typings that are always up to date",
 	"type": "module",
