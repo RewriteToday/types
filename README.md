@@ -43,6 +43,9 @@ Types used in direct API requests.
 
   - Suffix `Data` → data returned by the API
   E.g.: `RESTGetListWebhooksData`
+  
+- Prefix `Webhook*`
+Represents any data that come from a webhook.
 
 <div align="center">
 
@@ -62,6 +65,35 @@ async function fetchHooks() {
 	
 	return data
 }
+```
+
+<div align="center">
+
+### Typing webhook events
+
+We are using [Bun](https://elysiajs.com/) here as example, but you can use it however you want.
+
+</div>
+
+```ts
+import { type WebhookEvent, WebhookEventType } from '@rewritetoday/types/v1';
+
+const server = Bun.serve({
+	port: 3000,
+	routes: {
+		async '/webhooks/rewrite'(request) {
+			const event: WebhookEvent = await request.json();
+			
+			switch (event.type) {
+				case WebhookEventType.MessageSent:
+					console.log('Hey, a new message!');
+					
+					return Response.json({});
+				case ...
+			}
+		},
+	},
+});
 ```
 
 <div align="center">

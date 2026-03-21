@@ -9,3 +9,5 @@ export * from './resources/webhooks';
 export * from './rest';
 
 export { API_BASE_URL, Routes } from './routes';
+
+export * from './webhooks';
