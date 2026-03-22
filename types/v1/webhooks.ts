@@ -5,7 +5,7 @@ import type {
 	MessageType,
 } from './resources/message';
 import type { APIOTPMessage } from './resources/otp';
-import type { WebhookEventType } from './resources/webhooks';
+import { WebhookEventType } from './resources/webhooks';
 
 export interface WebhookBase<
 	Type extends WebhookEventType,
@@ -156,3 +156,67 @@ export type WebhookEvent =
 	| WebhookMessageScheduledEvent
 	| WebhookMessageFailedEvent
 	| WebhookMessageCanceledEvent;
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.SMSOTP} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookSMSOTPEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.SMSOTP;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageSent} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageSentEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageSent;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageBatch} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageBatchEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageBatch;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageQueued} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageQueuedEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageQueued;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageDelivered} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageDeliveredEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageDelivered;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageScheduled} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageScheduledEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageScheduled;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageFailed} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageFailedEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageFailed;
+}
+
+/**
+ * Checks whether the event is a {@link WebhookEventType.MessageCanceled} or not
+ * @param event The event data received from Rewrite
+ */
+export function isWebhookMessageCanceledEvent(event: WebhookEvent) {
+	return event.type === WebhookEventType.MessageCanceled;
+}
