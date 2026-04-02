@@ -1,14 +1,24 @@
+import type { APIContact } from './resources/contacts';
 import type { CountryCode, Snowflake } from './resources/globals';
-import type { APIWebhookLog } from './resources/logs';
+import type {
+	APIWebhookLog,
+	APIWebhookLogSummary,
+	WebhookDeliveryStatus,
+} from './resources/logs';
 import type {
 	APIMessage,
 	APIMessageTag,
 	MessageStatus,
+	MessageType,
 } from './resources/message';
 import type { APIOTPMessage } from './resources/otp';
-import type { APITemplate } from './resources/templates';
+import type { APISegment } from './resources/segments';
+import type { APITemplate, APITemplateTag } from './resources/templates';
 import type {
 	APIWebhook,
+	APIWebhookDelivery,
+	APIWebhookSummary,
+	WebhookEventSelection,
 	WebhookEventType,
 	WebhookStatus,
 } from './resources/webhooks';
@@ -83,6 +93,97 @@ export type APIResponseWithCursor<Data> =
 			};
 	  };
 
+/** `GET https://api.rewritetoday.com/v1/contacts/:identifier`. */
+export type RESTGetContactData = APIResponse<APIContact>;
+
+/** `GET https://api.rewritetoday.com/v1/contacts`. */
+export type RESTGetListContactsData = APIResponseWithCursor<APIContact[]>;
+
+/** `GET https://api.rewritetoday.com/v1/contacts`. */
+export type RESTGetListContactsQueryParams = RESTCursorOptions;
+
+/** `POST https://api.rewritetoday.com/v1/contacts`. */
+export type RESTPostCreateContactData = APIResponse<
+	Pick<APIContact, 'id' | 'phone' | 'country' | 'createdAt'>
+>;
+
+/** `POST https://api.rewritetoday.com/v1/contacts`. */
+export interface RESTPostCreateContactBody {
+	/** Contact number in E.164 format. */
+	phone: string;
+
+	/** Optional contact name. */
+	name?: string;
+
+	/** Optional preferred channel for the contact. */
+	channel?: MessageType;
+
+	/** Arbitrary metadata stored with the contact. */
+	tags?: Record<string, unknown>;
+}
+
+/** `PATCH https://api.rewritetoday.com/v1/contacts/:id`. */
+export type RESTPatchUpdateContactData = APIResponse<null>;
+
+/** `PATCH https://api.rewritetoday.com/v1/contacts/:id`. */
+export type RESTPatchUpdateContactBody = Partial<RESTPostCreateContactBody>;
+
+/** `DELETE https://api.rewritetoday.com/v1/contacts/:id`. */
+export type RESTDeleteContactData = APIResponse<null>;
+
+/** `GET https://api.rewritetoday.com/v1/segments/:id`. */
+export type RESTGetSegmentData = APIResponse<APISegment>;
+
+/** `GET https://api.rewritetoday.com/v1/segments`. */
+export type RESTGetListSegmentsData = APIResponseWithCursor<APISegment[]>;
+
+/** `GET https://api.rewritetoday.com/v1/segments`. */
+export type RESTGetListSegmentsQueryParams = RESTCursorOptions;
+
+/** `POST https://api.rewritetoday.com/v1/segments`. */
+export type RESTPostCreateSegmentData = APIResponse<APISegment>;
+
+/** `POST https://api.rewritetoday.com/v1/segments`. */
+export interface RESTPostCreateSegmentBody {
+	/** Segment name. */
+	name: string;
+
+	/** Optional HEX color associated with the segment. */
+	color?: string | null;
+
+	/** Optional segment description. */
+	description?: string | null;
+}
+
+/** `PATCH https://api.rewritetoday.com/v1/segments/:id`. */
+export type RESTPatchUpdateSegmentData = APIResponse<null>;
+
+/** `PATCH https://api.rewritetoday.com/v1/segments/:id`. */
+export type RESTPatchUpdateSegmentBody = Partial<RESTPostCreateSegmentBody>;
+
+/** `DELETE https://api.rewritetoday.com/v1/segments/:id`. */
+export type RESTDeleteSegmentData = APIResponse<null>;
+
+/** `GET https://api.rewritetoday.com/v1/segments/:id/contacts`. */
+export type RESTGetListSegmentContactsData = APIResponseWithCursor<
+	APIContact[]
+>;
+
+/** `GET https://api.rewritetoday.com/v1/segments/:id/contacts`. */
+export type RESTGetListSegmentContactsQueryParams = RESTCursorOptions;
+
+/** `POST https://api.rewritetoday.com/v1/segments/:id/contacts`. */
+export interface RESTPostAttachSegmentContactBody {
+	/** Contact identifier to attach to the segment. */
+	contactId: Snowflake;
+}
+
+/** `POST https://api.rewritetoday.com/v1/segments/:id/contacts`. */
+export type RESTPostAttachSegmentContactData = APIResponse<null>;
+
+/** `DELETE https://api.rewritetoday.com/v1/segments/:id/contacts/:contactId`. */
+export type RESTDeleteDetachSegmentContactData = APIResponse<null>;
+
 /** `GET https://api.rewritetoday.com/v1/webhooks/:id`. */
 export type RESTGetWebhookData = APIResponse<APIWebhook>;
 
@@ -93,45 +194,53 @@ export type RESTPostCreateWebhookData = APIResponse<
 
 /** `POST https://api.rewritetoday.com/v1/webhooks`. */
 export interface RESTPostCreateWebhookBody {
-	/** Webhook name. */
-	name?: APIWebhook['name'];
+	/** Optional webhook name. */
+	name?: string;
 
 	/** Destination URL for webhook events. */
 	endpoint: APIWebhook['endpoint'];
 
-	/** Subscribed events as {@link WebhookEventType}. */
-	events: APIWebhook['events'];
+	/** Subscribed webhook events. */
+	events: WebhookEventSelection[];
 
-	/** Secret to use in the webhook requests. */
+	/** Optional secret to use in webhook deliveries. */
 	secret?: string;
+
+	/** Optional delivery overrides. */
+	delivery?: Partial<APIWebhookDelivery>;
 }
 
 /** `DELETE https://api.rewritetoday.com/v1/webhooks/:id`. */
 export type RESTDeleteWebhookData = APIResponse<null>;
 
 /** `PATCH https://api.rewritetoday.com/v1/webhooks/:id`. */
-export type RESTPatchUpdateWebhookData = APIResponse<APIWebhook>;
+export type RESTPatchUpdateWebhookData = APIResponse<null>;
 
 /** `PATCH https://api.rewritetoday.com/v1/webhooks/:id`. */
 export interface RESTPatchUpdateWebhookBody {
 	/** Optional webhook name. */
-	name?: APIWebhook['name'];
+	name?: string | null;
 
-	/** Optional webhook endpoint URL. */
+	/** Optional destination URL for webhook events. */
 	endpoint?: APIWebhook['endpoint'];
 
-	/** Optional subscribed events as {@link WebhookEventType}. */
-	events?: APIWebhook['events'];
+	/** Optional set of subscribed webhook events. */
+	events?: WebhookEventSelection[];
 
-	/** Optional status as {@link WebhookStatus}. */
+	/** Optional status. */
 	status?: WebhookStatus;
 
-	/** Optional secret to send in webhook requests. */
+	/** Optional secret to use in webhook deliveries. */
 	secret?: string;
+
+	/** Optional delivery overrides. */
+	delivery?: Partial<APIWebhookDelivery>;
 }
 
 /** `GET https://api.rewritetoday.com/v1/webhooks`. */
-export type RESTGetListWebhooksData = APIResponseWithCursor<APIWebhook[]>;
+export type RESTGetListWebhooksData = APIResponseWithCursor<
+	APIWebhookSummary[]
+>;
 
 /** `GET https://api.rewritetoday.com/v1/webhooks`. */
 export type RESTGetListWebhooksQueryParams = RESTCursorOptions;
@@ -141,8 +250,14 @@ export type RESTGetListTemplatesData = APIResponseWithCursor<APITemplate[]>;
 
 /** `GET https://api.rewritetoday.com/v1/templates`. */
 export interface RESTGetListTemplatesQueryParams extends RESTCursorOptions {
-	/** When `true`, include the template `i18n` map in list/detail responses. */
-	with18n?: boolean;
+	/** When `true`, include the template `i18n` map in responses. */
+	withi18n?: boolean;
+}
+
+/** `GET https://api.rewritetoday.com/v1/templates/:identifier`. */
+export interface RESTGetTemplateQueryParams {
+	/** When `true`, include the template `i18n` map in the response. */
+	withi18n?: boolean;
 }
 
 /** `POST https://api.rewritetoday.com/v1/templates`. */
@@ -152,9 +267,12 @@ export type RESTPostCreateTemplateData = APIResponse<
 
 /** `POST https://api.rewritetoday.com/v1/templates`. */
 export interface RESTPostCreateTemplateBody
-	extends Pick<APITemplate, 'name' | 'content' | 'variables' | 'description'> {
-	/** Locale-specific overrides available for the template. */
-	i18n?: Partial<Record<CountryCode, string>>;
+	extends Pick<APITemplate, 'name' | 'content' | 'variables'> {
+	/** Optional description saved with the template. */
+	description?: APITemplate['description'];
+
+	/** Optional static tags attached to the template. */
+	tags?: APITemplateTag[];
 }
 
 /** `PATCH https://api.rewritetoday.com/v1/templates/:id`. */
@@ -169,7 +287,7 @@ export type RESTPatchUpdateTemplateBody = Omit<
 /** `DELETE https://api.rewritetoday.com/v1/templates/:id`. */
 export type RESTDeleteTemplateData = APIResponse<null>;
 
-/** `GET https://api.rewritetoday.com/v1/templates/:id`. */
+/** `GET https://api.rewritetoday.com/v1/templates/:identifier`. */
 export type RESTGetTemplateData = APIResponse<APITemplate>;
 
 /** `DELETE https://api.rewritetoday.com/v1/api-keys/:key`. */
@@ -180,7 +298,7 @@ export type RESTGetWebhookLogData = APIResponse<APIWebhookLog>;
 
 /** `GET https://api.rewritetoday.com/v1/webhooks/:id/logs`. */
 export type RESTGetListWebhookLogsData = APIResponseWithCursor<
-	Omit<APIWebhookLog, 'payload'>[]
+	APIWebhookLogSummary[]
 >;
 
 /** `GET https://api.rewritetoday.com/v1/webhooks/:id/logs`. */
@@ -189,7 +307,7 @@ export interface RESTGetListWebhookLogsQueryParams extends RESTCursorOptions {
 	type?: WebhookEventType;
 
 	/** Delivery status to include in the result set. */
-	status?: WebhookStatus;
+	status?: WebhookDeliveryStatus;
 }
 
 /** `POST https://api.rewritetoday.com/v1/otp` */
@@ -222,22 +340,18 @@ export type RESTPostVerifyOTPCodeData = APIResponse<{
 	id: string;
 
 	/** Always `true` when the OTP verification succeeds. */
-	valid: boolean;
+	valid: true;
 
 	/** Timestamp when Rewrite marked the OTP as verified. */
-	verifiedAt: string | null;
+	verifiedAt: string;
 }>;
 
-/** `POST https://api.rewritetoday.com/v1/messages` */
-export type RESTPostSendMessageData = APIResponse<
-	Pick<APIMessage, 'id' | 'createdAt' | 'analysis'>
+type RESTMessageCreateResponse = Pick<
+	APIMessage,
+	'id' | 'createdAt' | 'analysis'
 >;
 
-/** `POST https://api.rewritetoday.com/v1/messages` */
-export type RESTPostSendMessageBody = {
-	/** Destination number in E.164 format. */
-	to: string;
-
+interface RESTMessageBaseBody {
 	/** Optional metadata stored with the message. */
 	tags?: APIMessageTag[];
 
@@ -255,28 +369,61 @@ export type RESTPostSendMessageBody = {
 		/** When `true`, Rewrite may optimize the content to fit GSM-7 when possible. */
 		smart?: boolean;
 	};
-} & (
-	| {
-			/** Rendered SMS content to send. */
-			content: string;
-	  }
-	| {
-			/** Template identifier to render before sending. */
-			templateId: Snowflake;
+}
 
-			/** Variable values used when rendering the selected template. */
-			variables: Record<string, string>;
-	  }
-);
+interface RESTMessagePhoneTargetBody {
+	/** Destination number in E.164 format. */
+	to: string;
+
+	/** Contact identifier or name target is not allowed when `to` is provided. */
+	contact?: never;
+}
+
+interface RESTMessageContactTargetBody {
+	/** Contact identifier or name used to resolve the destination number. */
+	contact: string;
+
+	/** Direct phone targets are not allowed when `contact` is provided. */
+	to?: never;
+}
+
+interface RESTMessageContentBody {
+	/** Rendered SMS content to send. */
+	content: string;
+
+	/** Template identifiers are not allowed when raw content is provided. */
+	templateId?: never;
+
+	/** Variables are not allowed when raw content is provided. */
+	variables?: never;
+}
+
+interface RESTMessageTemplateBody {
+	/** Template identifier to render before sending. */
+	templateId: Snowflake;
+
+	/** Variable values used when rendering the selected template. */
+	variables?: Record<string, string>;
+
+	/** Raw content is not allowed when a template is provided. */
+	content?: never;
+}
+
+/** `POST https://api.rewritetoday.com/v1/messages` */
+export type RESTPostSendMessageBody = RESTMessageBaseBody &
+	(RESTMessagePhoneTargetBody | RESTMessageContactTargetBody) &
+	(RESTMessageContentBody | RESTMessageTemplateBody);
+
+/** `POST https://api.rewritetoday.com/v1/messages` */
+export type RESTPostSendMessageData = APIResponse<RESTMessageCreateResponse>;
 
 /** `POST https://api.rewritetoday.com/v1/messages/batch` */
 export type RESTPostSendBatchMessagesBody = RESTPostSendMessageBody[];
 
 /** `POST https://api.rewritetoday.com/v1/messages/batch` */
-export type RESTPostSendBatchMessagesData = APIResponse<{
-	/** Identifiers for the messages accepted into the batch request. */
-	ids: Snowflake[];
-}>;
+export type RESTPostSendBatchMessagesData = APIResponse<
+	RESTMessageCreateResponse[]
+>;
 
 /** `POST https://api.rewritetoday.com/v1/messages/cancel` */
 export type RESTPostCancelMessageData = APIResponse<null>;

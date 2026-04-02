@@ -8,7 +8,7 @@ export interface APIWebhook {
 	id: Snowflake;
 
 	/** Webhook name (1-32 max). */
-	name: string;
+	name: string | null;
 
 	/** Secret content to send in events. */
 	secret: string;
@@ -16,18 +16,45 @@ export interface APIWebhook {
 	/** Destination URL for webhook events. */
 	endpoint: string;
 
-	/** Subscribed events as {@link WebhookEventType}. */
-	events: WebhookEventType[];
+	/** Subscribed events. */
+	events: WebhookEventSelection[];
 
 	/** Current status as {@link WebhookStatus}. */
 	status: WebhookStatus;
 
-	/** Project ID in {@link Snowflake} format. */
-	projectId: Snowflake;
+	/** Timeout in milliseconds before Rewrite aborts the attempt. */
+	timeout: number;
+
+	/** Number of retries allowed after the first failed attempt. */
+	retries: number;
 
 	/** Timestamp when the webhook endpoint was created. */
 	createdAt: string;
 }
+
+/**
+ * https://docs.rewritetoday.com/api-reference/webhooks
+ */
+export type APIWebhookSummary = Omit<APIWebhook, 'secret'>;
+
+/**
+ * https://docs.rewritetoday.com/api-reference/webhooks
+ */
+export interface APIWebhookDelivery {
+	/** Timeout in milliseconds before Rewrite aborts the attempt. */
+	timeout: number;
+
+	/** Number of retries allowed after the first failed attempt. */
+	retries: number;
+}
+
+/** Wildcard selector that subscribes a webhook to every supported event. */
+export const WEBHOOK_ALL_EVENTS = '*';
+
+/** Event selector accepted by webhook create and update endpoints. */
+export type WebhookEventSelection =
+	| WebhookEventType
+	| typeof WEBHOOK_ALL_EVENTS;
 
 /**
  * https://docs.rewritetoday.com/api-reference/webhooks

@@ -8,13 +8,19 @@ export interface APIMessage {
 	id: Snowflake;
 
 	/** Timestamp when Rewrite accepted the message. */
-	createdAt: Snowflake;
+	createdAt: string;
 
 	/** Segmentation analysis for the SMS content accepted by Rewrite. */
 	analysis: APIMessageAnalysis;
 
 	/** Destination number in E.164 format. */
 	to: string;
+
+	/** Origin phone identifier used to send the message, when available. */
+	from: Snowflake | null;
+
+	/** Linked contact identifier, when the message is associated with a contact. */
+	contactId: Snowflake | null;
 
 	/** Message type stored by Rewrite. See {@link MessageType} */
 	type: MessageType;
@@ -49,7 +55,7 @@ export interface APIMessage {
 
 /** https://docs.rewritetoday.com/api-reference/messages */
 export enum MessageEncoding {
-	GMS7 = 'GMS7',
+	GSM7 = 'GSM7',
 	UCS2 = 'UCS2',
 }
 
@@ -70,6 +76,15 @@ export interface APIMessageTag {
 
 	/** Tag value attached to the message. */
 	value: string;
+}
+
+/** https://docs.rewritetoday.com/api-reference/messages */
+export interface MessageError {
+	/** Provider or platform-specific error code. */
+	code: unknown;
+
+	/** Human-readable error message. */
+	message: string;
 }
 
 /** https://docs.rewritetoday.com/api-reference/messages */

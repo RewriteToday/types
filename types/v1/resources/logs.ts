@@ -49,6 +49,11 @@ export interface APIWebhookLog {
 /**
  * https://docs.rewritetoday.com/api-reference/logs
  */
+export type APIWebhookLogSummary = Omit<APIWebhookLog, 'payload' | 'webhookId'>;
+
+/**
+ * https://docs.rewritetoday.com/api-reference/logs
+ */
 export enum WebhookDeliveryStatus {
 	Success = 'SUCCESS',
 	Failed = 'FAILED',

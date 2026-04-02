@@ -1,10 +1,11 @@
-import type { Snowflake } from './resources/globals';
+import type { CountryCode, Snowflake } from './resources/globals';
 import type {
-	APIMessage,
+	APIMessageAnalysis,
+	APIMessageTag,
+	MessageError,
 	MessageStatus,
 	MessageType,
 } from './resources/message';
-import type { APIOTPMessage } from './resources/otp';
 import { WebhookEventType } from './resources/webhooks';
 
 export interface WebhookBase<
@@ -27,12 +28,70 @@ export interface WebhookBase<
 	createdAt: string;
 }
 
+export interface WebhookOTPMetadata {
+	/** Prefix included in the OTP SMS. */
+	prefix: string;
+
+	/** Timestamp when the OTP expires. */
+	expiresAt: string;
+
+	/** Minutes until the OTP expires. */
+	expiresIn: number;
+}
+
+export interface WebhookMessagePayload {
+	/** Message identifier. */
+	id: Snowflake;
+
+	/** Project identifier that emitted the event. */
+	projectId: Snowflake;
+
+	/** Destination number in E.164 format. */
+	to: string;
+
+	/** Resolved contact name or phone, when applicable. */
+	contact: string | null;
+
+	/** Linked contact identifier, when applicable. */
+	contactId: Snowflake | null;
+
+	/** Metadata attached to the message. */
+	tags: APIMessageTag[];
+
+	/** Message type. */
+	type: MessageType;
+
+	/** Latest delivery status known by Rewrite. */
+	status: MessageStatus;
+
+	/** Lowercase ISO 3166-1 alpha-2 country code inferred from the destination number. */
+	country: CountryCode;
+
+	/** Final SMS content sent to the destination number. */
+	content: string;
+
+	/** Segmentation analysis for the rendered SMS content. */
+	analysis: APIMessageAnalysis;
+
+	/** Template used to render the message, when applicable. */
+	templateId: Snowflake | null;
+
+	/** Timestamp when Rewrite scheduled the message, when applicable. */
+	scheduledAt: string | null;
+
+	/** Timestamp when Rewrite marked the message as delivered, when applicable. */
+	deliveredAt: string | null;
+
+	/** Delivery error returned for the message, when applicable. */
+	error: MessageError | null;
+}
+
 /** https://docs.rewritetoday.com/en/webhooks/events/sms-otp */
 export type WebhookSMSOTPEvent = WebhookBase<
 	WebhookEventType.SMSOTP,
-	Omit<APIMessage, 'type' | 'status'> & {
+	WebhookMessagePayload & {
 		/** OTP data. */
-		otp: Pick<APIOTPMessage, 'prefix' | 'expiresAt'>;
+		otp: WebhookOTPMetadata;
 
 		/** The type of the message. Always {@link MessageType.OTP} */
 		type: MessageType.OTP;
@@ -45,7 +104,7 @@ export type WebhookSMSOTPEvent = WebhookBase<
 /** https://docs.rewritetoday.com/en/webhooks/events/message-sent */
 export type WebhookMessageSentEvent = WebhookBase<
 	WebhookEventType.MessageSent,
-	Omit<APIMessage, 'type' | 'status'> & {
+	WebhookMessagePayload & {
 		/** The type of the message. Always {@link MessageType.SMS} */
 		type: MessageType.SMS;
 
@@ -74,7 +133,7 @@ export type WebhookMessageBatchEvent = WebhookBase<
 /** https://docs.rewritetoday.com/en/webhooks/events/message-queued */
 export type WebhookMessageQueuedEvent = WebhookBase<
 	WebhookEventType.MessageQueued,
-	Omit<APIMessage, 'type' | 'status'> & {
+	WebhookMessagePayload & {
 		/** The type of the message. Always {@link MessageType.SMS} */
 		type: MessageType.SMS;
 
@@ -90,13 +149,19 @@ export type WebhookMessageQueuedEvent = WebhookBase<
  */
 export type WebhookMessageDeliveredEvent = WebhookBase<
 	WebhookEventType.MessageDelivered,
-	never
+	WebhookMessagePayload & {
+		/** The type of the message. Always {@link MessageType.SMS} */
+		type: MessageType.SMS;
+
+		/** Latest delivery status known by Rewrite. Always {@link MessageStatus.Delivered} */
+		status: MessageStatus.Delivered;
+	}
 >;
 
 /** https://docs.rewritetoday.com/en/webhooks/events/message-scheduled */
 export type WebhookMessageScheduledEvent = WebhookBase<
 	WebhookEventType.MessageScheduled,
-	Omit<APIMessage, 'type' | 'status' | 'scheduledAt'> & {
+	WebhookMessagePayload & {
 		/** Scheduled send time, when the message was delayed intentionally. */
 		scheduledAt: string;
 
@@ -111,39 +176,28 @@ export type WebhookMessageScheduledEvent = WebhookBase<
 /** https://docs.rewritetoday.com/en/webhooks/events/message-failed */
 export type WebhookMessageFailedEvent = WebhookBase<
 	WebhookEventType.MessageFailed,
-	Omit<APIMessage, 'status'> & {
+	WebhookMessagePayload & {
 		/** Latest delivery status known by Rewrite. Always {@link MessageStatus.Failed} */
 		status: MessageStatus.Failed;
 
 		/** The error explaining why the message failed. */
-		error: {
-			/** A human-readable error code. */
-			code: string;
-
-			/** Internal message error. */
-			message: string;
-		};
+		error: MessageError;
 	}
 >;
 
 /** https://docs.rewritetoday.com/en/webhooks/events/message-canceled */
 export type WebhookMessageCanceledEvent = WebhookBase<
 	WebhookEventType.MessageCanceled,
-	Omit<
-		APIMessage,
-		| 'type'
-		| 'status'
-		| ('scheduledAt' & {
-				/** Scheduled send time, when the message was delayed intentionally. */
-				scheduledAt: string;
+	WebhookMessagePayload & {
+		/** Scheduled send time, when the message was delayed intentionally. */
+		scheduledAt: string;
 
-				/** The type of the message. Always {@link MessageType.SMS} */
-				type: MessageType.SMS;
+		/** The type of the message. Always {@link MessageType.SMS} */
+		type: MessageType.SMS;
 
-				/** Latest delivery status known by Rewrite. Always {@link MessageStatus.Canceled} */
-				status: MessageStatus.Canceled;
-		  })
-	>
+		/** Latest delivery status known by Rewrite. Always {@link MessageStatus.Canceled} */
+		status: MessageStatus.Canceled;
+	}
 >;
 
 /** https://docs.rewritetoday.com/en/webhooks */
