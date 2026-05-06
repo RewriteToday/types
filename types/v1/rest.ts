@@ -26,10 +26,7 @@ import type {
 } from './resources/message';
 import type { APIOTPMessage, APIOTPVerification } from './resources/otp';
 import type { APISegment } from './resources/segments';
-import type {
-	APICreatedTag,
-	APITag,
-} from './resources/tags';
+import type { APICreatedTag, APITag } from './resources/tags';
 import type {
 	APICreatedTemplate,
 	APITemplate,
@@ -168,7 +165,9 @@ export type RESTPatchUpdateSegmentData = APIResponse<null>;
 export type RESTPatchUpdateSegmentBody = Partial<RESTPostCreateSegmentBody>;
 export type RESTDeleteSegmentData = APIResponse<null>;
 export type RESTDeleteSegmentsData = RESTDeleteManyData;
-export type RESTGetListSegmentContactsData = APIResponseWithCursor<APIContact[]>;
+export type RESTGetListSegmentContactsData = APIResponseWithCursor<
+	APIContact[]
+>;
 export type RESTGetListSegmentContactsQueryParams = RESTCursorOptions;
 export interface RESTPostAttachSegmentContactBody {
 	contactId: Snowflake;
@@ -250,7 +249,9 @@ export interface RESTPostDuplicateTemplateBody {
 }
 export type RESTPostDuplicateTemplateData = APIResponse<APICreatedTemplate>;
 
-export type RESTGetListWebhooksData = APIResponseWithCursor<APIWebhookSummary[]>;
+export type RESTGetListWebhooksData = APIResponseWithCursor<
+	APIWebhookSummary[]
+>;
 export type RESTGetWebhookData = APIResponse<APIWebhookWithSecret>;
 export type RESTPostCreateWebhookData = APIResponse<
 	Pick<APIWebhookWithSecret, 'id' | 'secret' | 'createdAt'> & {

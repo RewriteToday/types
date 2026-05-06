@@ -79,7 +79,10 @@ export type WebhookMessageBatchEvent = WebhookBase<
 
 export type WebhookMessageQueuedEvent = WebhookBase<
 	WebhookEventType.MessageQueued,
-	WebhookMessagePayload & { type: MessageType.SMS; status: MessageStatus.Queued }
+	WebhookMessagePayload & {
+		type: MessageType.SMS;
+		status: MessageStatus.Queued;
+	}
 >;
 
 export type WebhookMessageFailedEvent = WebhookBase<
