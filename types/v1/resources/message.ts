@@ -1,139 +1,103 @@
-import type { CountryCode, Snowflake } from './globals';
+import type { CountryCode, Metadata, Snowflake } from './globals';
 
-/**
- * https://docs.rewritetoday.com/api-reference/messages
- */
-export interface APIMessage {
-	/** Message ID in {@link Snowflake} format. */
-	id: Snowflake;
-
-	/** Timestamp when Rewrite accepted the message. */
-	createdAt: string;
-
-	/** Segmentation analysis for the SMS content accepted by Rewrite. */
-	analysis: APIMessageAnalysis;
-
-	/** Destination number in E.164 format. */
-	to: string;
-
-	/** Origin phone identifier used to send the message, when available. */
-	from: Snowflake | null;
-
-	/** Linked contact identifier, when the message is associated with a contact. */
-	contactId: Snowflake | null;
-
-	/** Message type stored by Rewrite. See {@link MessageType} */
-	type: MessageType;
-
-	/** Metadata attached to the message. */
-	tags: APIMessageTag[];
-
-	/** Latest delivery status known by Rewrite. See {@link MessageStatus} */
-	status: MessageStatus;
-
-	/** Country inferred from the destination number. See {@link CountryCode} */
-	country: CountryCode;
-
-	/** Final SMS content sent to the destination number. */
-	content: string;
-
-	/** Encoding used by the provider when sending the SMS. See {@link MessageEncoding} */
-	encoding: MessageEncoding;
-
-	/** Template used to render the message, when applicable. */
-	templateId: Snowflake | null;
-
-	/** Timestamp when the provider confirmed final delivery. */
-	deliveredAt: string | null;
-
-	/** Scheduled send time, when the message was delayed intentionally. */
-	scheduledAt: string | null;
-
-	/** Whether the message consumed pay-as-you-go balance instead of subscription quota. */
-	isPayAsYouGo: boolean;
-}
-
-/** https://docs.rewritetoday.com/api-reference/messages */
-export enum MessageEncoding {
-	GSM7 = 'GSM7',
-	UCS2 = 'UCS2',
-}
-
-/** https://docs.rewritetoday.com/api-reference/messages */
-export enum MessageStatus {
-	Sent = 'SENT',
-	Queued = 'QUEUED',
-	Failed = 'FAILED',
-	Canceled = 'CANCELED',
-	Scheduled = 'SCHEDULED',
-	Delivered = 'DELIVERED',
-}
-
-/** https://docs.rewritetoday.com/api-reference/messages */
-export interface APIMessageTag {
-	/** Tag key attached to the message. */
-	name: string;
-
-	/** Tag value attached to the message. */
-	value: string;
-}
-
-/** https://docs.rewritetoday.com/api-reference/messages */
-export interface MessageError {
-	/** Provider or platform-specific error code. */
-	code: unknown;
-
-	/** Human-readable error message. */
-	message: string;
-}
-
-/** https://docs.rewritetoday.com/api-reference/messages */
+/** Stored message kind. */
 export enum MessageType {
 	SMS = 'SMS',
 	OTP = 'OTP',
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/messages
- */
-export interface APIMessageAnalysis {
-	/** Total character count in the rendered SMS content. */
-	characters: number;
-
-	/** Encoding detected for the rendered SMS content. */
-	encoding: MessageAnalysisEncoding;
-
-	/** Segments result. */
-	segments: {
-		/** Number of SMS segments required to send the message. */
-		count: number;
-
-		/** Maximum characters allowed when the message fits in a single SMS. */
-		single: number;
-
-		/** Maximum characters allowed per segment in multipart SMS. */
-		concat: number;
-
-		/** Why Rewrite selected the reported segmentation result. */
-		reason: MessageAnalysisReason;
-	};
+/** Stored SMS encoding. */
+export enum MessageEncoding {
+	GSM7 = 'GSM7',
+	UCS2 = 'UCS2',
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/messages
- */
+/** Latest message state known by Rewrite. */
+export enum MessageStatus {
+	Sent = 'SENT',
+	Queued = 'QUEUED',
+	Failed = 'FAILED',
+	Canceled = 'CANCELED',
+	Received = 'RECEIVED',
+	Scheduled = 'SCHEDULED',
+	Delivered = 'DELIVERED',
+}
+
+/** How Rewrite may handle long SMS bodies. */
+export enum MessageSegmentationMode {
+	Fail = 'fail',
+	Trim = 'trim',
+	Send = 'send',
+}
+
+/** Analysis-time encoding inferred by Rewrite. */
+export enum MessageAnalysisEncoding {
+	GSM7 = 'gsm7',
+	UCS2 = 'ucs2',
+}
+
+/** Why Rewrite chose the reported segmentation result. */
 export enum MessageAnalysisReason {
 	FitsSingleSegment = 'fits',
 	SmartEncodingApplied = 'smart',
-
 	ExceedsSingleSegmentLimit = 'singleLimit',
 	ContainsNonGsm7Characters = 'nonGsm7',
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/messages
- */
-export enum MessageAnalysisEncoding {
-	GSM7 = 'gsm7',
-	UCS2 = 'ucs2',
+/** Error metadata embedded in message webhooks. */
+export interface MessageError {
+	code: string | number | null;
+	message: string;
+}
+
+/** Segment sizing reported by Rewrite. */
+export interface APIMessageAnalysisSegments {
+	count: number;
+	single: number;
+	concat: number;
+	reason: MessageAnalysisReason;
+}
+
+/** Segmentation analysis returned by Rewrite. */
+export interface APIMessageAnalysis {
+	characters: number;
+	encoding: MessageAnalysisEncoding;
+	segments: APIMessageAnalysisSegments;
+}
+
+/** High-level message reference returned by creation endpoints. */
+export interface APIMessageRef {
+	id: Snowflake;
+	createdAt: string;
+}
+
+/** Message creation result returned by Rewrite. */
+export interface APICreatedMessage extends APIMessageRef {
+	analysis: APIMessageAnalysis;
+	sandbox: boolean;
+}
+
+/** Batch message creation result returned by Rewrite. */
+export interface APIBatchMessagesResult {
+	ids: Snowflake[];
+}
+
+/** Persisted message representation returned by Rewrite. */
+export interface APIMessage {
+	id: Snowflake;
+	createdAt: string;
+	contact: string | null;
+	contactId: Snowflake | null;
+	to: string;
+	from: string | null;
+	type: MessageType;
+	tags: Metadata;
+	status: MessageStatus;
+	country: CountryCode;
+	content: string;
+	encoding: MessageEncoding;
+	templateId: Snowflake | null;
+	deliveredAt: string | null;
+	scheduledAt: string | null;
+	sandbox: boolean;
 }

@@ -1,97 +1,51 @@
 import type { Snowflake } from './globals';
 
-/**
- * https://docs.rewritetoday.com/api-reference/webhooks
- */
-export interface APIWebhook {
-	/** Webhook ID in {@link Snowflake} format. */
-	id: Snowflake;
+/** https://docs.rewritetoday.com/en/api/openapi-webhooks.json */
+export enum WebhookEventType {
+	SMSOTP = 'sms.otp',
+	MessageSent = 'message.sent',
+	MessageBatch = 'message.batch',
+	MessageQueued = 'message.queued',
+	MessageFailed = 'message.failed',
+	MessageCanceled = 'message.canceled',
+	MessageDelivered = 'message.delivered',
+	MessageReceived = 'message.received',
+	MessageScheduled = 'message.scheduled',
+}
 
-	/** Webhook name (1-32 max). */
-	name: string | null;
+/** Event selector accepted by webhook management endpoints. */
+export type WebhookEventSelection = WebhookEventType;
 
-	/** Secret content to send in events. */
-	secret: string;
+/** Delivery result recorded by Rewrite for one webhook attempt. */
+export enum WebhookDeliveryStatus {
+	Failed = 'FAILED',
+	Success = 'SUCCESS',
+}
 
-	/** Destination URL for webhook events. */
-	endpoint: string;
-
-	/** Subscribed events. */
-	events: WebhookEventSelection[];
-
-	/** Current status as {@link WebhookStatus}. */
-	status: WebhookStatus;
-
-	/** Timeout in milliseconds before Rewrite aborts the attempt. */
+/** Optional delivery tuning stored with a webhook. */
+export interface APIWebhookDelivery {
 	timeout: number;
-
-	/** Number of retries allowed after the first failed attempt. */
 	retries: number;
+}
 
-	/** Timestamp when the webhook endpoint was created. */
+/** https://docs.rewritetoday.com/en/api/openapi-webhooks.json */
+export interface APIWebhook {
+	id: Snowflake;
+	name: string | null;
+	events: WebhookEventSelection[];
+	isEnabled: boolean;
+	sandbox: boolean;
+	endpoint: string;
+	retries: number;
+	timeout: number;
+	lastDeliveryAt: string | null;
 	createdAt: string;
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/webhooks
- */
-export type APIWebhookSummary = Omit<APIWebhook, 'secret'>;
-
-/**
- * https://docs.rewritetoday.com/api-reference/webhooks
- */
-export interface APIWebhookDelivery {
-	/** Timeout in milliseconds before Rewrite aborts the attempt. */
-	timeout: number;
-
-	/** Number of retries allowed after the first failed attempt. */
-	retries: number;
+/** Webhook payload returned when the secret is available. */
+export interface APIWebhookWithSecret extends APIWebhook {
+	secret: string;
 }
 
-/** Wildcard selector that subscribes a webhook to every supported event. */
-export const WEBHOOK_ALL_EVENTS = '*';
-
-/** Event selector accepted by webhook create and update endpoints. */
-export type WebhookEventSelection =
-	| WebhookEventType
-	| typeof WEBHOOK_ALL_EVENTS;
-
-/**
- * https://docs.rewritetoday.com/api-reference/webhooks
- */
-export enum WebhookEventType {
-	/** Fired when an OTP SMS was sent. */
-	SMSOTP = 'sms.otp',
-
-	/** Fired when a message was sent. */
-	MessageSent = 'message.sent',
-
-	/** Fired when a batch message was sent. */
-	MessageBatch = 'message.batch',
-
-	/** Fired when an message enters the queue. */
-	MessageQueued = 'message.queued',
-
-	/** Fired when an message reaches the destination. */
-	MessageDelivered = 'message.delivered',
-
-	/** Fired when an message is scheduled for later. */
-	MessageScheduled = 'message.scheduled',
-
-	/** Fired when an message delivery fails. */
-	MessageFailed = 'message.failed',
-
-	/** Fired when an message is canceled before delivery. */
-	MessageCanceled = 'message.canceled',
-}
-
-/**
- * https://docs.rewritetoday.com/api-reference/webhooks
- */
-export enum WebhookStatus {
-	/** The webhook is active and receiving events. */
-	Active = 'ACTIVE',
-
-	/** The webhook is paused and not receiving events. */
-	Inactive = 'INACTIVE',
-}
+/** Summary payload used by list endpoints. */
+export type APIWebhookSummary = APIWebhook;

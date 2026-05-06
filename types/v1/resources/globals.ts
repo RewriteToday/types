@@ -1,10 +1,26 @@
 /**
- * A unique identifier for a resource.
+ * A unique identifier for a Rewrite resource.
  */
 export type Snowflake = `${bigint}`;
 
 /**
- * Country codes used in templates i18n.
+ * JSON-like value accepted in Rewrite metadata payloads.
+ */
+export type MetadataValue =
+	| boolean
+	| number
+	| string
+	| null
+	| MetadataValue[]
+	| { [key: string]: MetadataValue };
+
+/**
+ * Arbitrary JSON object used by Rewrite for metadata bags.
+ */
+export type Metadata = Record<string, MetadataValue>;
+
+/**
+ * Country codes used in Rewrite localized payloads.
  */
 export type CountryCode =
 	| 'ac'

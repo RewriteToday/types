@@ -1,52 +1,28 @@
-import type { CountryCode, Snowflake } from './globals';
+import type { CountryCode, Metadata, Snowflake } from './globals';
 
-/**
- * https://docs.rewritetoday.com/api-reference/templates
- */
-export interface APITemplate {
-	/** Template ID in {@link Snowflake} format. */
-	id: Snowflake;
-
-	/** Template name. */
-	name: string;
-
-	/** Default SMS content stored for the template. */
-	content: string;
-
-	/** Human-readable description saved with the template (1-72 max.). */
-	description: string | null;
-
-	/** Locale-specific overrides available for the template when requested. */
-	i18n?: Partial<Record<CountryCode, string>>;
-
-	/** Template variables as {@link APITemplateVariable}. */
-	variables: APITemplateVariable[];
-
-	/** Static tags attached to the template. */
-	tags: APITemplateTag[];
-
-	/** Timestamp when the template was created. */
-	createdAt: string;
-}
-
-/**
- * https://docs.rewritetoday.com/api-reference/templates
- */
+/** https://docs.rewritetoday.com/en/api/openapi-templates.json */
 export interface APITemplateVariable {
-	/** Variable name. */
 	name: string;
-
-	/** Optional default value. */
 	fallback?: string;
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/templates
- */
-export interface APITemplateTag {
-	/** Tag name. */
-	name: string;
+/** Locale map used by template i18n payloads. */
+export type APITemplateI18n = Partial<Record<CountryCode, string>>;
 
-	/** Tag value. */
-	value: string;
+/** https://docs.rewritetoday.com/en/api/openapi-templates.json */
+export interface APITemplate {
+	id: Snowflake;
+	name: string;
+	content: string;
+	i18n?: APITemplateI18n;
+	variables: APITemplateVariable[];
+	description: string | null;
+	tags?: Metadata;
+	createdAt: string;
+}
+
+/** Creation result returned by template create/duplicate endpoints. */
+export interface APICreatedTemplate {
+	id: Snowflake;
+	createdAt: string;
 }

@@ -1,60 +1,57 @@
-import type { Snowflake } from './globals';
-import type { WebhookEventType } from './webhooks';
+import type { MetadataValue, Snowflake } from './globals';
 
-/**
- * https://docs.rewritetoday.com/api-reference/logs
- */
-export interface APIWebhookLog {
-	/** Webhook log in {@link Snowflake} format. */
-	id: Snowflake;
-
-	/** Timestamp when Rewrite recorded the delivery attempt. */
-	createdAt: string;
-
-	/** Webhook identifier associated with the log entry. */
-	webhookId: Snowflake | null;
-
-	/** Message identifier associated with the delivery attempt, when available. */
-	messageId: Snowflake | null;
-
-	/** Webhook event type delivered in this attempt. See {@link WebhookEventType} */
-	type: WebhookEventType;
-
-	/** Transport or application error captured for the attempt. */
-	error: string | null;
-
-	/** Delivery outcome recorded by Rewrite. See {@link WebhookDeliveryStatus} */
-	status: WebhookDeliveryStatus;
-
-	/** Endpoint URL that received the delivery attempt. */
-	url: string;
-
-	/** HTTP status code returned by the destination endpoint. */
-	code: number | null;
-
-	// TODO: Create a better type
-	/** Event payload delivered during this attempt. */
-	payload: object;
-
-	/** Attempt number for this delivery. */
-	attempt: number;
-
-	/**Round-trip time in milliseconds. */
-	latency: number | null;
-
-	/** Next scheduled retry time, when the attempt failed and will retry. */
-	retryAt: string | null;
+/** Request source recorded by Rewrite logs. */
+export enum RequestLogSource {
+	API = 'API',
+	Dashboard = 'Dashboard',
 }
 
-/**
- * https://docs.rewritetoday.com/api-reference/logs
- */
-export type APIWebhookLogSummary = Omit<APIWebhookLog, 'payload' | 'webhookId'>;
+/** https://docs.rewritetoday.com/en/api/openapi-logs.json */
+export interface APIRequestLogSummary {
+	/** Request log identifier returned by Rewrite. */
+	id: Snowflake;
 
-/**
- * https://docs.rewritetoday.com/api-reference/logs
- */
-export enum WebhookDeliveryStatus {
-	Success = 'SUCCESS',
-	Failed = 'FAILED',
+	/** HTTP method used for the request. */
+	method: string;
+
+	/** Request path recorded by Rewrite. */
+	endpoint: string;
+
+	/** HTTP status code returned by Rewrite. */
+	status: number;
+
+	/** Source that originated the request. */
+	source: RequestLogSource;
+
+	/** Whether the request belongs to a sandbox flow. */
+	sandbox: boolean;
+
+	/** Timestamp when Rewrite recorded the request. */
+	createdAt: string;
+}
+
+/** https://docs.rewritetoday.com/en/api/openapi-logs.json */
+export interface APIRequestLog extends APIRequestLogSummary {
+	/** Requester IP address, when available. */
+	ip: string | null;
+
+	/** Project identifier associated with the log, when available. */
+	projectId: Snowflake | null;
+
+	/** API key identifier associated with the log, when available. */
+	apiKeyId: Snowflake | null;
+
+	/** Serialized request body recorded by Rewrite. */
+	requestBody:
+		| MetadataValue
+		| { [key: string]: MetadataValue }
+		| MetadataValue[]
+		| null;
+
+	/** Serialized response body recorded by Rewrite. */
+	responseBody:
+		| MetadataValue
+		| { [key: string]: MetadataValue }
+		| MetadataValue[]
+		| null;
 }

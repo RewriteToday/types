@@ -1,31 +1,61 @@
-import type { CountryCode, Snowflake } from './globals';
+import type { CountryCode, Metadata, Snowflake } from './globals';
 import type { MessageType } from './message';
 
-/**
- * https://docs.rewritetoday.com/api-reference/contacts
- */
+/** https://docs.rewritetoday.com/en/api/openapi-contacts.json */
 export interface APIContact {
-	/** Contact ID in {@link Snowflake} format. */
+	/** Contact identifier returned by Rewrite. */
 	id: Snowflake;
 
 	/** Timestamp when the contact was created. */
 	createdAt: string;
 
-	/** Timestamp when the contact was last updated. */
-	updatedAt: string;
-
-	/** Optional human-readable name for the contact. */
+	/** Stored contact label, when available. */
 	name: string | null;
 
-	/** Contact number in E.164 format. */
+	/** Normalized destination number stored for the contact. */
 	phone: string;
 
-	/** Lowercase ISO 3166-1 alpha-2 country code inferred from the number. */
+	/** Country inferred from the normalized number. */
 	country: CountryCode;
 
-	/** Preferred channel stored for the contact, when available. */
+	/** Preferred channel stored for the contact, when configured. */
 	channel: MessageType | null;
 
-	/** Arbitrary contact metadata stored by Rewrite. */
-	tags: Record<string, unknown>;
+	/** Preferred locale codes stored with the contact. */
+	preferredLanguages: string[];
+
+	/** Arbitrary metadata stored with the contact. */
+	tags: Metadata;
+
+	/** Whether the contact belongs to a sandbox flow. */
+	sandbox: boolean;
+
+	/** Timestamp when the contact was last updated. */
+	updatedAt: string;
+}
+
+/** Result returned by contact creation. */
+export interface APICreatedContact {
+	/** Contact identifier returned by Rewrite. */
+	id: Snowflake;
+
+	/** Normalized destination number stored for the contact. */
+	phone: string;
+
+	/** Country inferred from the normalized number. */
+	country: CountryCode;
+
+	/** Timestamp when the contact was created. */
+	createdAt: string;
+
+	/** Whether the contact was created under sandbox mode. */
+	sandbox: boolean;
+}
+
+/** Aggregate result returned by contact batch creation/upsert. */
+export interface APIContactBatchResult {
+	inserted: number;
+	updated: number;
+	ignored: number;
+	total: number;
 }

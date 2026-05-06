@@ -29,6 +29,6 @@ describe('Routes', () => {
 				limit: 10,
 				status: WebhookDeliveryStatus.Failed,
 			}),
-		).toBe('/webhooks/42/logs?limit=10&status=FAILED');
+		).toBe('/webhooks/42/deliveries?limit=10&status=FAILED');
 	});
 });

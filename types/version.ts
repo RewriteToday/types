@@ -3,7 +3,7 @@
 /**
  * Current version of [@rewritetoday/types](https://www.npmjs.com/package/@rewritetoday/types).
  */
-export const version = '1.0.4' as const;
+export const version = '1.1.0' as const;
 
 /**
  * Current Rewrite API version.

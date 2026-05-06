@@ -1,10 +1,14 @@
 import type {
+	RESTGetListAPIKeyLogsQueryParams,
+	RESTGetListAPIKeysQueryParams,
 	RESTGetListContactsQueryParams,
+	RESTGetListDeliveriesQueryParams,
+	RESTGetListLogsQueryParams,
 	RESTGetListMessagesQueryParams,
 	RESTGetListSegmentContactsQueryParams,
 	RESTGetListSegmentsQueryParams,
 	RESTGetListTemplatesQueryParams,
-	RESTGetListWebhookLogsQueryParams,
+	RESTGetListWebhookDeliveriesQueryParams,
 	RESTGetListWebhooksQueryParams,
 	RESTGetTemplateQueryParams,
 } from './rest';
@@ -13,158 +17,127 @@ import { createCursorQuery, createQuery } from './utils';
 export const API_BASE_URL = 'https://api.rewritetoday.com';
 
 export const Routes = {
-	otp: {
-		/** `POST https://api.rewritetoday.com/v1/otp`. */
-		send() {
-			return '/otp';
-		},
-		/** `POST https://api.rewritetoday.com/v1/otp/:id/verify`. */
-		verify(id: string) {
-			return `/otp/${id}/verify`;
-		},
-	},
 	messages: {
-		/** `POST https://api.rewritetoday.com/v1/messages`. */
-		send() {
-			return '/messages';
+		send: () => '/messages',
+		create() {
+			return this.send();
 		},
-		/** `POST https://api.rewritetoday.com/v1/messages/batch`. */
-		batch() {
-			return '/messages/batch';
-		},
-		/** `GET https://api.rewritetoday.com/v1/messages`. */
+		batch: () => '/messages/batch',
 		list(options?: RESTGetListMessagesQueryParams) {
 			return `/messages?${createCursorQuery(options)}`;
 		},
-		/** `GET https://api.rewritetoday.com/v1/messages/:id`. */
-		get(id: string) {
-			return `/messages/${id}`;
-		},
-		/** `POST https://api.rewritetoday.com/v1/messages/:id/cancel`. */
-		cancel(id: string) {
-			return `/messages/${id}/cancel`;
+		get: (id: string) => `/messages/${id}`,
+		cancel: (id: string) => `/messages/${id}/cancel`,
+	},
+	apiKeys: {
+		list: (options?: RESTGetListAPIKeysQueryParams) =>
+			`/api-keys?${createCursorQuery(options)}`,
+		create: () => '/api-keys',
+		sweep: () => '/api-keys',
+		get: (id: string) => `/api-keys/${id}`,
+		update: (id: string) => `/api-keys/${id}`,
+		delete: (id: string) => `/api-keys/${id}`,
+		logs(id: string, options?: RESTGetListAPIKeyLogsQueryParams) {
+			return `/api-keys/${id}/logs?${createCursorQuery(options)}`;
 		},
 	},
 	contacts: {
-		/** `GET https://api.rewritetoday.com/v1/contacts`. */
 		list(options?: RESTGetListContactsQueryParams) {
 			return `/contacts?${createCursorQuery(options)}`;
 		},
-		/** `POST https://api.rewritetoday.com/v1/contacts`. */
-		create() {
-			return '/contacts';
-		},
-		/** `GET https://api.rewritetoday.com/v1/contacts/:identifier`. */
-		get(identifier: string) {
-			return `/contacts/${identifier}`;
-		},
-		/** `PATCH https://api.rewritetoday.com/v1/contacts/:id`. */
-		update(id: string) {
-			return `/contacts/${id}`;
-		},
-		/** `DELETE https://api.rewritetoday.com/v1/contacts/:id`. */
-		delete(id: string) {
-			return `/contacts/${id}`;
-		},
+		create: () => '/contacts',
+		sweep: () => '/contacts',
+		batch: () => '/contacts/batch',
+		get: (identifier: string) => `/contacts/${identifier}`,
+		update: (id: string) => `/contacts/${id}`,
+		delete: (id: string) => `/contacts/${id}`,
+		addTags: (id: string) => `/contacts/${id}/tags`,
+		removeTags: (id: string) => `/contacts/${id}/tags`,
 	},
 	segments: {
-		/** `GET https://api.rewritetoday.com/v1/segments`. */
 		list(options?: RESTGetListSegmentsQueryParams) {
 			return `/segments?${createCursorQuery(options)}`;
 		},
-		/** `POST https://api.rewritetoday.com/v1/segments`. */
-		create() {
-			return '/segments';
-		},
-		/** `GET https://api.rewritetoday.com/v1/segments/:id`. */
-		get(id: string) {
-			return `/segments/${id}`;
-		},
-		/** `PATCH https://api.rewritetoday.com/v1/segments/:id`. */
-		update(id: string) {
-			return `/segments/${id}`;
-		},
-		/** `DELETE https://api.rewritetoday.com/v1/segments/:id`. */
-		delete(id: string) {
-			return `/segments/${id}`;
-		},
+		create: () => '/segments',
+		sweep: () => '/segments',
+		get: (id: string) => `/segments/${id}`,
+		update: (id: string) => `/segments/${id}`,
+		delete: (id: string) => `/segments/${id}`,
 		contacts: {
-			/** `GET https://api.rewritetoday.com/v1/segments/:id/contacts`. */
 			list(id: string, options?: RESTGetListSegmentContactsQueryParams) {
 				return `/segments/${id}/contacts?${createCursorQuery(options)}`;
 			},
-			/** `POST https://api.rewritetoday.com/v1/segments/:id/contacts`. */
-			attach(id: string) {
-				return `/segments/${id}/contacts`;
-			},
-			/** `DELETE https://api.rewritetoday.com/v1/segments/:id/contacts/:contactId`. */
-			detach(id: string, contactId: string) {
-				return `/segments/${id}/contacts/${contactId}`;
-			},
+			attach: (id: string) => `/segments/${id}/contacts`,
+			attachMany: (id: string) => `/segments/${id}/contacts/attach`,
+			detachMany: (id: string) => `/segments/${id}/contacts/detach`,
+			detach: (id: string, contactId: string) =>
+				`/segments/${id}/contacts/${contactId}`,
 		},
+		attachContact: (id: string) => `/segments/${id}/contacts`,
+		attachContacts: (id: string) => `/segments/${id}/contacts/attach`,
+		detachContacts: (id: string) => `/segments/${id}/contacts/detach`,
+		detachContact: (id: string, contactId: string) =>
+			`/segments/${id}/contacts/${contactId}`,
 	},
-	webhooks: {
-		/** `GET https://api.rewritetoday.com/v1/webhooks`. */
-		list(options?: RESTGetListWebhooksQueryParams) {
-			return `/webhooks?${createCursorQuery(options)}`;
-		},
-		/** `POST https://api.rewritetoday.com/v1/webhooks`. */
+	otp: {
+		send: () => '/otp',
 		create() {
-			return '/webhooks';
+			return this.send();
 		},
-		/** `PATCH https://api.rewritetoday.com/v1/webhooks/:id`. */
-		update(id: string) {
-			return `/webhooks/${id}`;
-		},
-		/** `DELETE https://api.rewritetoday.com/v1/webhooks/:id`. */
-		delete(id: string) {
-			return `/webhooks/${id}`;
-		},
-		/** `GET https://api.rewritetoday.com/v1/webhooks/:id`. */
-		get(id: string) {
-			return `/webhooks/${id}`;
-		},
-		/** `GET https://api.rewritetoday.com/v1/webhooks/:id/logs`. */
-		logs(id: string, options?: RESTGetListWebhookLogsQueryParams) {
-			return `/webhooks/${id}/logs?${createCursorQuery(options)}`;
-		},
+		verify: (id: string) => `/otp/${id}/verify`,
+	},
+	tags: {
+		list: () => '/tags',
+		create: () => '/tags',
+		get: (id: string) => `/tags/${id}`,
+		update: (id: string) => `/tags/${id}`,
+		delete: (id: string) => `/tags/${id}`,
 	},
 	templates: {
-		/** `GET https://api.rewritetoday.com/v1/templates`. */
 		list(options?: RESTGetListTemplatesQueryParams) {
 			return `/templates?${createCursorQuery(options)}`;
 		},
-		/** `POST https://api.rewritetoday.com/v1/templates`. */
-		create() {
-			return '/templates';
-		},
-		/** `PATCH https://api.rewritetoday.com/v1/templates/:id`. */
-		update(id: string) {
-			return `/templates/${id}`;
-		},
-		/** `DELETE https://api.rewritetoday.com/v1/projects/:id/templates/:id`. */
-		delete(id: string) {
-			return `/templates/${id}`;
-		},
-		/** `GET https://api.rewritetoday.com/v1/projects/:id/templates/:id`. */
+		create: () => '/templates',
+		sweep: () => '/templates',
 		get(identifier: string, options?: RESTGetTemplateQueryParams) {
 			const query = createQuery(options);
-
 			return query
 				? `/templates/${identifier}?${query}`
 				: `/templates/${identifier}`;
 		},
+		update: (id: string) => `/templates/${id}`,
+		delete: (id: string) => `/templates/${id}`,
+		duplicate: (id: string) => `/templates/${id}/duplicate`,
 	},
-	apiKeys: {
-		/** `DELETE https://api.rewritetoday.com/v1/api-keys/:key`. */
-		delete(id: string) {
-			return `/api-keys/${id}`;
+	webhooks: {
+		list(options?: RESTGetListWebhooksQueryParams) {
+			return `/webhooks?${createCursorQuery(options)}`;
+		},
+		create: () => '/webhooks',
+		sweep: () => '/webhooks',
+		get: (id: string) => `/webhooks/${id}`,
+		update: (id: string) => `/webhooks/${id}`,
+		delete: (id: string) => `/webhooks/${id}`,
+		deliveries(id: string, options?: RESTGetListWebhookDeliveriesQueryParams) {
+			return `/webhooks/${id}/deliveries?${createCursorQuery(options)}`;
+		},
+		logs(id: string, options?: RESTGetListWebhookDeliveriesQueryParams) {
+			return this.deliveries(id, options);
 		},
 	},
 	logs: {
-		/** `GET /logs/:id`. */
-		get(id: string) {
-			return `/logs/${id}`;
+		list(options?: RESTGetListLogsQueryParams) {
+			return `/logs?${createCursorQuery(options)}`;
+		},
+		get: (id: string) => `/logs/${id}`,
+	},
+	deliveries: {
+		list(options?: RESTGetListDeliveriesQueryParams) {
+			return `/deliveries?${createCursorQuery(options)}`;
+		},
+		get: (id: string) => `/deliveries/${id}`,
+		byWebhook(id: string, options?: RESTGetListWebhookDeliveriesQueryParams) {
+			return `/webhooks/${id}/deliveries?${createCursorQuery(options)}`;
 		},
 	},
-};
+} as const;
